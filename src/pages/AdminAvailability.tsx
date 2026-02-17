@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { Clock, Plus, Trash2, CalendarOff, Loader2 } from "lucide-react";
+import { Clock, Plus, Trash2, CalendarOff, Loader2, Video } from "lucide-react";
 import { format } from "date-fns";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -37,15 +37,19 @@ const AdminAvailability = () => {
   const [newSlot, setNewSlot] = useState({ day: 1, start: "09:00", end: "17:00", duration: 30 });
   const [newBlockDate, setNewBlockDate] = useState("");
   const [newBlockReason, setNewBlockReason] = useState("");
+  const [meetingLink, setMeetingLink] = useState("");
+  const [savingMeetLink, setSavingMeetLink] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
-    const [slotsRes, blockedRes] = await Promise.all([
+    const [slotsRes, blockedRes, settingsRes] = await Promise.all([
       supabase.from("availability_slots").select("*").order("day_of_week").order("start_time"),
       supabase.from("blocked_dates").select("*").order("blocked_date"),
+      supabase.from("admin_settings").select("*").eq("setting_key", "default_meeting_link").maybeSingle(),
     ]);
     if (slotsRes.data) setSlots(slotsRes.data);
     if (blockedRes.data) setBlockedDates(blockedRes.data);
+    if (settingsRes.data) setMeetingLink(settingsRes.data.setting_value);
     setLoading(false);
   };
 
@@ -85,6 +89,20 @@ const AdminAvailability = () => {
     else { toast({ title: "Date blocked" }); setNewBlockDate(""); setNewBlockReason(""); fetchData(); }
   };
 
+  const saveMeetingLink = async () => {
+    if (!user) return;
+    setSavingMeetLink(true);
+    const { error } = await supabase
+      .from("admin_settings")
+      .upsert(
+        { admin_user_id: user.id, setting_key: "default_meeting_link", setting_value: meetingLink },
+        { onConflict: "admin_user_id,setting_key" }
+      );
+    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+    else toast({ title: "Meeting link saved" });
+    setSavingMeetLink(false);
+  };
+
   const removeBlockedDate = async (id: string) => {
     await supabase.from("blocked_dates").delete().eq("id", id);
     fetchData();
@@ -95,6 +113,31 @@ const AdminAvailability = () => {
   return (
     <AdminLayout>
       <h1 className="font-display text-3xl font-bold text-foreground mb-8">Manage Availability</h1>
+
+      {/* Meeting Link Setting */}
+      <Card className="border-border bg-card mb-8">
+        <CardHeader>
+          <CardTitle className="font-display flex items-center gap-2">
+            <Video className="h-5 w-5 text-primary" /> Default Meeting Link
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-muted-foreground">
+            Paste your Google Meet link here. It will be included in every booking confirmation email.
+          </p>
+          <div className="flex gap-3">
+            <Input
+              value={meetingLink}
+              onChange={(e) => setMeetingLink(e.target.value)}
+              placeholder="https://meet.google.com/xxx-xxxx-xxx"
+              className="flex-1"
+            />
+            <Button onClick={saveMeetingLink} disabled={savingMeetLink} className="box-glow">
+              {savingMeetLink ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save"}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid gap-8 lg:grid-cols-2">
         <div className="space-y-6">

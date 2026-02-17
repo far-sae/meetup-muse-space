@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_settings: {
+        Row: {
+          admin_user_id: string
+          created_at: string
+          id: string
+          setting_key: string
+          setting_value: string
+          updated_at: string
+        }
+        Insert: {
+          admin_user_id: string
+          created_at?: string
+          id?: string
+          setting_key: string
+          setting_value: string
+          updated_at?: string
+        }
+        Update: {
+          admin_user_id?: string
+          created_at?: string
+          id?: string
+          setting_key?: string
+          setting_value?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       availability_slots: {
         Row: {
           admin_user_id: string
@@ -82,6 +109,7 @@ export type Database = {
           created_at: string
           duration_minutes: number
           id: string
+          meeting_link: string | null
           notes: string | null
           role_applied: string
           status: string
@@ -97,6 +125,7 @@ export type Database = {
           created_at?: string
           duration_minutes?: number
           id?: string
+          meeting_link?: string | null
           notes?: string | null
           role_applied: string
           status?: string
@@ -112,6 +141,7 @@ export type Database = {
           created_at?: string
           duration_minutes?: number
           id?: string
+          meeting_link?: string | null
           notes?: string | null
           role_applied?: string
           status?: string

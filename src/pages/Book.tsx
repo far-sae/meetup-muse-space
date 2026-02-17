@@ -137,6 +137,11 @@ const Book = () => {
       toast({ title: "Booking Failed", description: error.message, variant: "destructive" });
       setSubmitting(false);
     } else {
+      // Send confirmation email in background
+      supabase.functions.invoke("send-booking-confirmation", {
+        body: { bookingId: data.id },
+      }).catch(console.error);
+
       navigate("/book/confirmation", {
         state: {
           booking: data,
