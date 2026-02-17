@@ -15,14 +15,9 @@ const Index = () => {
             </div>
             <span className="font-display text-lg font-bold text-foreground">InterviewBook</span>
           </Link>
-          <div className="flex items-center gap-4">
-            <Link to="/login">
-              <Button variant="ghost" size="sm">Admin Login</Button>
-            </Link>
-            <Link to="/book">
-              <Button size="sm" className="box-glow">Book Now</Button>
-            </Link>
-          </div>
+          <Link to="/book">
+            <Button size="sm" className="box-glow">Book Now</Button>
+          </Link>
         </div>
       </nav>
 
@@ -143,7 +138,6 @@ const Index = () => {
       <footer className="border-t border-border/50 py-8">
         <div className="container flex items-center justify-between text-sm text-muted-foreground">
           <span>© 2026 InterviewBook. All rights reserved.</span>
-          <Link to="/login" className="hover:text-primary transition-colors">Admin</Link>
         </div>
       </footer>
     </div>
