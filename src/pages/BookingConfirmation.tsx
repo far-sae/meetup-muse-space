@@ -1,6 +1,6 @@
 import { useLocation, Link, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { CheckCircle, Calendar, Clock, User, Briefcase, Download } from "lucide-react";
+import { CheckCircle, Calendar, Clock, User, Briefcase, Download, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -87,6 +87,17 @@ const BookingConfirmation = () => {
                 <p className="font-medium text-foreground">{booking.role_applied}</p>
               </div>
             </div>
+            {booking.meeting_link && (
+              <div className="flex items-center gap-3">
+                <Video className="h-5 w-5 text-primary shrink-0" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Meeting Link</p>
+                  <a href={booking.meeting_link} target="_blank" rel="noopener noreferrer" className="font-medium text-primary hover:underline break-all">
+                    Join Interview
+                  </a>
+                </div>
+              </div>
+            )}
 
             <div className="pt-4 flex flex-col gap-3">
               <Button onClick={generateICS} variant="outline" className="gap-2">
